@@ -62,51 +62,44 @@ router.post(
     }
   }
 );
-// User create a Post
-router.post(
-  "/",
-  upload.fields([{ name: "image", maxCount: 1 }]),
-  async (req, res) => {
-    try {
-      const checkIfPostExists = await Post.findOne({ title: req.body.title });
-      if (checkIfPostExists) {
-        res.send({
-          status: 404,
-          message: "Post Already Exists",
-        });
-      } else {
-        const post = new Post({
-          first_name: req.body.first_name,
-          last_name: req.body.last_name,
-          title: req.body.title,
-          body: req.body.body,
-          clap: 0,
-          unclap: 0,
-          category: req.body.category,
-          comment: 0,
-          author_img:
-            "/uploads/" +
-            (req.files["image"][1] ? req.files["image"][1].filename : ""),
-          image:
-            "/uploads/" +
-            (req.files["image"][0] ? req.files["image"][0].filename : ""),
-        });
 
-        const result = await post.save();
-        res.send({
-          status: 200,
-          message: "Post created successfully",
-          data: result,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Error saving Post with images" });
+// User create a Post
+router.post("/", upload.single("image"), async (req, res) => {
+  try {
+    const checkIfPostExists = await Post.findOne({ title: req.body.title });
+    if (checkIfPostExists) {
+      res.send({
+        status: 404,
+        message: "Post Already Exists",
+      });
+    } else {
+      const post = new Post({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        title: req.body.title,
+        body: req.body.body,
+        clap: 0,
+        unclap: 0,
+        category: req.body.category,
+        comment: 0,
+        author_img: req.body.author_img,
+        image: "/uploads/" + req.file.filename,
+      });
+
+      const result = await post.save();
+      res.send({
+        status: 200,
+        message: "Post created successfully",
+        data: result,
+      });
     }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error saving Post with images" });
   }
-);
+});
 
 // Get a single Post by ID
 router.get("/:id", async (req, res) => {

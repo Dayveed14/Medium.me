@@ -2,6 +2,7 @@ const express = require("express");
 const Comment = require("../model/Comment.model");
 const router = express.Router();
 
+//create  acomment
 router.post("/", async (req, res) => {
   try {
     const comment = new Comment({
@@ -64,10 +65,7 @@ router.delete("/:id", async (req, res) => {
 // Get all Comments
 router.get("/", async (req, res, next) => {
   try {
-    const { title } = req.query;
-    const filter = title ? { title: title } : {};
-
-    const result = await Comment.find(filter);
+    const result = await Comment.find();
     res.send({
       status: 200,
       message: "OK",
