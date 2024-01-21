@@ -17,7 +17,7 @@ app.use(cors());
 
 mongoose
   .connect(
-    "mongodb+srv://Dayveed:Upt0wnk!nq@cluster0.pzicq0x.mongodb.net/blog_database"
+   
   )
   .then(() => {
     console.log("Connection successful");
