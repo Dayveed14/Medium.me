@@ -20,7 +20,10 @@ const upload = multer({ storage });
 // Admin create a Post
 router.post(
   "/add",
-  upload.fields([{ name: "image", maxCount: 1 }]),
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "author_img", maxCount: 1 },
+  ]),
   async (req, res) => {
     try {
       const checkIfPostExists = await Post.findOne({ title: req.body.title });
@@ -41,10 +44,12 @@ router.post(
           comment: 0,
           author_img:
             "/uploads/" +
-            (req.files["image"][1] ? req.files["image"][1].filename : ""),
+            (req.files["author_img"]
+              ? req.files["author_img"][0].filename
+              : ""),
           image:
             "/uploads/" +
-            (req.files["image"][0] ? req.files["image"][0].filename : ""),
+            (req.files["image"] ? req.files["image"][0].filename : ""),
         });
 
         const result = await post.save();

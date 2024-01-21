@@ -31,6 +31,7 @@ router.post("/register", upload.single("image"), async (req, res) => {
         last_name: req.body.last_name,
         email: req.body.email,
         password: req.body.password,
+        summary: req.body.summary,
         role: "user",
         image: "/uploads/" + req.file.filename, // Set the image field with the file path or URL
       });
@@ -66,6 +67,7 @@ router.post("/", upload.single("image"), async (req, res) => {
         email: req.body.email,
         password: req.body.password,
         role: req.body.role,
+        role: req.body.summary,
         image: "/uploads/" + req.file.filename, // Set the image field with the file path or URL
       });
 
@@ -170,6 +172,37 @@ router.put("/:id", upload.single("image"), async (req, res) => {
     existingUser.last_name = req.body.last_name || existingUser.last_name;
     existingUser.email = req.body.email || existingUser.email;
     existingUser.password = req.body.password || existingUser.password;
+    existingUser.summary = req.body.summary || existingUser.summary;
+    existingUser.role = req.body.role || existingUser.role;
+
+    if (req.file) {
+      existingUser.image = "/uploads/" + req.file.filename;
+    }
+    const updatedUser = await existingUser.save();
+
+    res.status(200).json({
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating user" });
+  }
+});
+
+// Edit Profile route
+router.put("/editprofile/:id", upload.single("image"), async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    existingUser.first_name = req.body.first_name || existingUser.first_name;
+    existingUser.last_name = req.body.last_name || existingUser.last_name;
+    existingUser.email = req.body.email || existingUser.email;
+    existingUser.password = req.body.password || existingUser.password;
+    existingUser.summary = req.body.summary || existingUser.summary;
 
     if (req.file) {
       existingUser.image = "/uploads/" + req.file.filename;
